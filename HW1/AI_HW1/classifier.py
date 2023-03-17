@@ -25,4 +25,3 @@ class WeakClassifier:
             0 otherwise
         """
         return 1 if self.polarity * self.feature.computeFeature(x) < self.polarity * self.threshold else 0
-    

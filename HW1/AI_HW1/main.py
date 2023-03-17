@@ -26,6 +26,7 @@ plt.show()
 # And find better results. Please test value 1~10 at least.
 # print('Start training your classifier')
 clf = adaboost.Adaboost(T=10)
+
 clf.train(trainData)
 
 clf.save('clf_200_1_10')

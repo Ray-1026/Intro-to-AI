@@ -4,7 +4,6 @@ import utils
 import numpy as np
 import math
 from sklearn.feature_selection import SelectPercentile, f_classif
-from sklearn.svm import SVC
 import pickle
 
 class Adaboost:
@@ -66,7 +65,6 @@ class Adaboost:
             beta = error / (1.0 - error)
             for i in range(len(accuracy)):
                 weights[i] = weights[i] * (beta ** (1 - accuracy[i]))
-            print(beta)
             alpha = math.log(1.0/beta)
             self.alphas.append(alpha)
             self.clfs.append(clf)
@@ -149,28 +147,76 @@ class Adaboost:
             bestClf: The best WeakClassifier Class
             bestError: The error of the best classifer
         """
-        # Begin your code (Part 2)
+        # # Begin your code (Part 2)
+        # """
+        # 1. Initialize bestClf and bestError to none and infinity, respectively.
+        # 2. For every column of featureVals, initialize eps=0.
+        # 3. Check every raw whether featureVals and labels are correct
+        #    (featureVals<=0, labels=1 or featureVals>0, label=0).
+        #    If not, add its corresponding weights to eps.
+        # 4. After scanning the whole row, if eps is less than bestError,
+        #    make bestError equal to eps and bestClf become weakclassifier of the corresponding features.
+        # 5. Return the bestClf and bestError.
+        # """
+        # col, row=featureVals.shape
+        # bestClf, bestError=None, float('inf')
+        # for i in range(col):
+        #     eps=0
+        #     for j in range(row):
+        #         if (featureVals[i][j]<0 and labels[j]==0) or (featureVals[i][j]>=0 and labels[j]==1):
+        #             eps+=weights[j]
+        #     if eps<bestError:
+        #         bestError=eps
+        #         bestClf=WeakClassifier(features[i])
+        # # End your code (Part 2)
+
+        # Part 6
         """
-        1. Initialize bestClf and bestError to none and infinity, respectively.
-        2. For every column of featureVals, initialize eps=0.
-        3. Check every raw whether featureVals and labels are correct
-           (featureVals<=0, labels=1 or featureVals>0, label=0).
-           If not, add its corresponding weights to eps.
-        4. After scanning the whole row, if eps is less than bestError,
-           make bestError equal to eps and bestClf become weakclassifier of the corresponding features.
-        5. Return the bestClf and bestError.
+        1. Find the best thresholds for each classifier, and we get an array of classifiers
+        2. For these classifiers, we classify each image. If not equal to its labels, we add 
+           the weights to eps.
+        3. Find the smallest eps and its classifier.
+        4. Return bestClf and bestError
         """
-        col, row=featureVals.shape
+        t_pos, t_neg=0, 0
+        clfs=[]
+        for i in range(len(weights)):
+            if labels[i]==1:
+                t_pos+=weights[i]
+            else:
+                t_neg+=weights[i]
+        for idx, feature in enumerate(featureVals):
+            applied=sorted(zip(weights, feature, labels), key=lambda x:x[1])
+            pos_cnt, pos_weights, neg_cnt, neg_weights=0, 0, 0, 0
+            error, best_f, best_t, best_p=float('inf'), None, None, None
+            for w, f, label in applied:
+                e=min(neg_weights+t_pos-pos_weights, pos_weights+t_neg-neg_weights)
+                if e<error:
+                    error=e
+                    best_f=features[idx]
+                    best_t=f
+                    if pos_cnt>neg_cnt:
+                        best_p=1
+                    else:
+                        best_p=-1
+                if label==1:
+                    pos_cnt+=1
+                    pos_weights+=w
+                else:
+                    neg_cnt+=1
+                    neg_weights+=w
+            clfs.append(WeakClassifier(best_f, best_t, best_p))
+
         bestClf, bestError=None, float('inf')
-        for i in range(col):
-          eps=0
-          for j in range(row):
-            if (featureVals[i][j]<0 and labels[j]==0) or (featureVals[i][j]>=0 and labels[j]==1):
-                eps+=weights[j]
-          if eps<bestError:
-              bestError=eps
-              bestClf=WeakClassifier(features[i])
-        # End your code (Part 2)
+        for clf in clfs:
+            eps=0
+            for i in range(len(iis)):
+                if clf.classify(iis[i])!=labels[i]:
+                    eps+=weights[i]
+            if eps<bestError:
+                bestClf=clf
+                bestError=eps
+        # Part 6
         return bestClf, bestError
     
     def classify(self, image):
