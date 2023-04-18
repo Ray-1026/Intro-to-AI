@@ -1,4 +1,4 @@
-# NYCU-intro-to-AI
+# Intro-to-AI
 
 Instructor : 陳弈廷
 
@@ -13,3 +13,8 @@ Semester : 2023 Spring
 - DFS
 - Uniform Cost Search (UCS)
 - A* search
+
+## HW3 : Multi-Agent Search
+- Minimax Search
+- Alpha-Beta Pruning
+- Expectimax Search
