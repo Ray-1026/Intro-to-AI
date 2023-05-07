@@ -18,3 +18,7 @@ Semester : 2023 Spring
 - Minimax Search
 - Alpha-Beta Pruning
 - Expectimax Search
+
+## HW4 : Reinforcement Learning
+- Q-learning
+- DQN
