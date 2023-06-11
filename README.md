@@ -1,6 +1,6 @@
 # Intro-to-AI
 
-Instructor : 陳弈廷
+Instructor : 陳奕廷
 
 Semester : 2023 Spring
 
